@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pemesanan Tiket Bus</title>
+</head>
+<body>
+<h2>Jadwal Bus</h2>
+<ul id="bus"></ul>
+
+<h2>Pesan Tiket</h2>
+<input id="nama" placeholder="Nama Penumpang">
+<input id="bus_id" placeholder="ID Bus">
+<input id="kursi" placeholder="Nomor Kursi">
+<button onclick="pesan()">Pesan</button>
+
+<h2>Daftar Pesanan</h2>
+<ul id="pesanan"></ul>
+
+<script>
+async function loadBus(){
+  const res = await fetch('/api/bus');
+  const data = await res.json();
+  document.getElementById('bus').innerHTML =
+    data.map(b=>`<li>${b.id}. ${b.nama_bus} - ${b.jam} - Rp${b.harga}</li>`).join('');
+}
+
+async function pesan(){
+  await fetch('/api/pesanan',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      nama_penumpang: nama.value,
+      bus_id: bus_id.value,
+      kursi: kursi.value
+    })
+  });
+  loadPesanan();
+}
+
+async function loadPesanan(){
+  const res = await fetch('/api/pesanan');
+  const data = await res.json();
+  document.getElementById('pesanan').innerHTML =
+    data.map(p=>`<li>${p.nama_penumpang} - ${p.nama_bus} - Kursi ${p.kursi}</li>`).join('');
+}
+
+loadBus();
+loadPesanan();
+</script>
+</body>
+</html>
