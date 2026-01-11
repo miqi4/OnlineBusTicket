@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Jadwal Bus</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-full">
+        <div class="page-header">
+            <h2>Available Schedules</h2>
+            <p id="route-info">Loading route info...</p>
+        </div>
+
+        <div id="bus-list" class="bus-grid">
+            <!-- Bus cards will be inserted here -->
+            <p style="text-align: center; width: 100%; grid-column: 1/-1;">Memuat data bus...</p>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <button onclick="history.back()" class="btn-dark" style="width: auto; padding: 0.5rem 1.5rem;">← Back to
+                Search</button>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const asal = params.get('asal');
+        const tujuan = params.get('tujuan');
+        const tanggal = params.get('tanggal');
+
+        document.getElementById('route-info').textContent = `${asal} ➝ ${tujuan} • ${tanggal}`;
+
+        async function loadBuses() {
+            try {
+                const res = await fetch(`/api/bus?asal=${asal}&tujuan=${tujuan}`);
+                const buses = await res.json();
+                const container = document.getElementById('bus-list');
+
+                if (buses.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; width: 100%; grid-column: 1/-1;">Tidak ada bus tersedia untuk rute ini.</p>';
+                    return;
+                }
+
+                container.innerHTML = buses.map(bus => `
+                    <div class="bus-card-premium">
+                        <div class="bus-image-container">
+                            <div class="price-tag">Rp${bus.harga.toLocaleString('id-ID')}</div>
+                            <img src="images/hero_bus.png" alt="${bus.nama_bus}">
+                        </div>
+                        <div class="bus-content">
+                            <h3 class="bus-title">${bus.nama_bus}</h3>
+                            <div class="bus-route">
+                                <span>🕒 ${bus.jam}</span>
+                                <span>•</span>
+                                <span>${bus.asal} ➝ ${bus.tujuan}</span>
+                            </div>
+                            <div class="bus-features">
+                                <span class="feature-tag">AC</span>
+                                <span class="feature-tag">WiFi</span>
+                                <span class="feature-tag">Reclining Seat</span>
+                            </div>
+                            <button onclick="selectBus(${bus.id})" class="btn-select-outline">Select Seat</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('bus-list').innerHTML = '<p style="text-align: center; color: red; width: 100%; grid-column: 1/-1;">Gagal memuat data bus.</p>';
+            }
+        }
+
+        function selectBus(id) {
+            window.location.href = `checkout.html?bus_id=${id}&tanggal=${tanggal}`;
+        }
+
+        loadBuses();
+    </script>
+</body>
+
+</html>

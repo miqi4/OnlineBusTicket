@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container" id="checkout-container">
+        <h2>Detail Pemesanan</h2>
+
+        <div id="bus-details" class="receipt" style="display: none;">
+            <!-- Bus details will be shown here -->
+        </div>
+
+        <form id="bookingForm" onsubmit="handleBooking(event)">
+            <div class="form-group">
+                <label for="nama">Nama Penumpang</label>
+                <input type="text" id="nama" required placeholder="Masukkan nama lengkap">
+            </div>
+
+            <div class="form-group">
+                <label for="kursi">Nomor Kursi</label>
+                <input type="number" id="kursi" required min="1" max="40" placeholder="Contoh: 12">
+            </div>
+
+            <div class="form-group">
+                <label>Metode Pembayaran</label>
+                <select required>
+                    <option value="transfer">Transfer Bank</option>
+                    <option value="ewallet">E-Wallet (GoPay/OVO/Dana)</option>
+                    <option value="qris">QRIS</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">Bayar & Pesan Tiket</button>
+        </form>
+
+        <button onclick="history.back()" class="btn"
+            style="background: transparent; color: var(--gray); border: 1px solid var(--gray); margin-top: 1rem;">Batal</button>
+    </div>
+
+    <div class="container" id="success-container" style="display: none; text-align: center;">
+        <div class="success-icon">✓</div>
+        <h2>Pembayaran Berhasil!</h2>
+        <p style="margin-bottom: 1.5rem; color: var(--gray);">Tiket Anda telah berhasil dipesan.</p>
+
+        <div class="receipt">
+            <div class="receipt-item">
+                <span>Nama</span>
+                <strong id="receipt-nama">-</strong>
+            </div>
+            <div class="receipt-item">
+                <span>Bus</span>
+                <strong id="receipt-bus">-</strong>
+            </div>
+            <div class="receipt-item">
+                <span>Kursi</span>
+                <strong id="receipt-kursi">-</strong>
+            </div>
+            <div class="receipt-item">
+                <span>Total Bayar</span>
+                <strong id="receipt-harga" style="color: var(--primary);">-</strong>
+            </div>
+        </div>
+
+        <button onclick="window.location.href='index.html'" class="btn">Kembali ke Beranda</button>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const busId = params.get('bus_id');
+        let busData = null;
+
+        async function loadBusDetails() {
+            try {
+                // Fetch all buses and find the one we need (since we don't have a get-by-id endpoint yet)
+                // Ideally we should have /api/bus/:id
+                const res = await fetch('/api/bus');
+                const buses = await res.json();
+                busData = buses.find(b => b.id == busId);
+
+                if (busData) {
+                    const details = document.getElementById('bus-details');
+                    details.style.display = 'block';
+                    details.innerHTML = `
+                        <div class="receipt-item"><span>Bus</span><strong>${busData.nama_bus}</strong></div>
+                        <div class="receipt-item"><span>Rute</span><strong>${busData.asal} ➝ ${busData.tujuan}</strong></div>
+                        <div class="receipt-item"><span>Jam</span><strong>${busData.jam}</strong></div>
+                        <div class="receipt-item"><span>Harga</span><strong style="color: var(--primary)">Rp${busData.harga.toLocaleString('id-ID')}</strong></div>
+                    `;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function handleBooking(e) {
+            e.preventDefault();
+            const nama = document.getElementById('nama').value;
+            const kursi = document.getElementById('kursi').value;
+
+            try {
+                const res = await fetch('/api/pesanan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nama_penumpang: nama,
+                        bus_id: busId,
+                        kursi: kursi
+                    })
+                });
+
+                if (res.ok) {
+                    showSuccess(nama, kursi);
+                } else {
+                    alert('Gagal memesan tiket. Silakan coba lagi.');
+                }
+            } catch (error) {
+                alert('Terjadi kesalahan koneksi.');
+            }
+        }
+
+        function showSuccess(nama, kursi) {
+            document.getElementById('checkout-container').style.display = 'none';
+            document.getElementById('success-container').style.display = 'block';
+
+            document.getElementById('receipt-nama').textContent = nama;
+            document.getElementById('receipt-bus').textContent = busData.nama_bus;
+            document.getElementById('receipt-kursi').textContent = kursi;
+            document.getElementById('receipt-harga').textContent = 'Rp' + busData.harga.toLocaleString('id-ID');
+        }
+
+        loadBusDetails();
+    </script>
+</body>
+
+</html>

@@ -1,51 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
+
 <head>
-<title>Pemesanan Tiket Bus</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bustion Transport Company</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
-<h2>Jadwal Bus</h2>
-<ul id="bus"></ul>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div>📧 contact@bustion.com</div>
+    <div>
+      <a href="#">Help</a>
+      <a href="#">Support</a>
+      <a href="#">Login</a>
+    </div>
+  </div>
 
-<h2>Pesan Tiket</h2>
-<input id="nama" placeholder="Nama Penumpang">
-<input id="bus_id" placeholder="ID Bus">
-<input id="kursi" placeholder="Nomor Kursi">
-<button onclick="pesan()">Pesan</button>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <span>⚡</span> Bustion
+    </div>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Our Bus</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <button class="btn-primary" style="padding: 0.5rem 1.5rem;">Get Quote</button>
+  </nav>
 
-<h2>Daftar Pesanan</h2>
-<ul id="pesanan"></ul>
+  <div class="main-container">
+    <!-- Left Column -->
+    <div class="left-column">
+      <div class="hero-content">
+        <div class="company-label">BUSTION TRANSPORT COMPANY</div>
+        <h1>Expertly Connecting<br>People and <span>Destinations</span></h1>
+        <p class="hero-description">Group travel redefined with modern buses, expert drivers, and personalized service
+          for every trip.</p>
 
-<script>
-async function loadBus(){
-  const res = await fetch('/api/bus');
-  const data = await res.json();
-  document.getElementById('bus').innerHTML =
-    data.map(b=>`<li>${b.id}. ${b.nama_bus} - ${b.jam} - Rp${b.harga}</li>`).join('');
-}
+        <div class="hero-buttons">
+          <button class="btn-primary">Get Started</button>
+          <button class="btn-dark">Our Story</button>
+        </div>
 
-async function pesan(){
-  await fetch('/api/pesanan',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      nama_penumpang: nama.value,
-      bus_id: bus_id.value,
-      kursi: kursi.value
-    })
-  });
-  loadPesanan();
-}
+        <img src="images/hero_bus.png" alt="Modern Bus" class="hero-bus-image">
+      </div>
+    </div>
 
-async function loadPesanan(){
-  const res = await fetch('/api/pesanan');
-  const data = await res.json();
-  document.getElementById('pesanan').innerHTML =
-    data.map(p=>`<li>${p.nama_penumpang} - ${p.nama_bus} - Kursi ${p.kursi}</li>`).join('');
-}
+    <!-- Right Column -->
+    <div class="right-column">
+      <!-- Driver Card -->
+      <div class="driver-card">
+        <img src="images/driver.png" alt="Bus Driver">
+        <div class="play-button">▶</div>
+      </div>
 
-loadBus();
-loadPesanan();
-</script>
+      <!-- Booking Form -->
+      <div class="booking-card">
+        <h2>Pick your Journey</h2>
+        <form id="searchForm" onsubmit="handleSearch(event)">
+          <div class="form-group">
+            <select id="asal" required>
+              <option value="" disabled selected>Travel From</option>
+              <option value="Jakarta">Jakarta</option>
+              <option value="Bandung">Bandung</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <select id="tujuan" required>
+              <option value="" disabled selected>Travel To</option>
+              <option value="Jakarta">Jakarta</option>
+              <option value="Bandung">Bandung</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <input type="date" id="tanggal" required>
+          </div>
+
+          <div class="form-group">
+            <input type="text" placeholder="Seat Number (Optional)" disabled
+              style="background-color: #e5e7eb; cursor: not-allowed;">
+          </div>
+
+          <button type="submit" class="btn-primary btn-block">Book Now</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Destinations Section -->
+  <section class="destination-section">
+    <h2 class="section-title">Discover Our Top Destinations</h2>
+    <div class="destination-grid">
+      <div class="destination-card" onclick="selectDestination('Jakarta')">
+        <img src="images/jakarta.png" alt="Jakarta">
+        <div class="destination-overlay">
+          <div class="destination-name">Jakarta</div>
+          <div class="destination-count">25+ Daily Routes</div>
+        </div>
+      </div>
+      <div class="destination-card" onclick="selectDestination('Bandung')">
+        <img src="images/bandung.png" alt="Bandung">
+        <div class="destination-overlay">
+          <div class="destination-name">Bandung</div>
+          <div class="destination-count">18+ Daily Routes</div>
+        </div>
+      </div>
+      <div class="destination-card" onclick="selectDestination('Yogyakarta')">
+        <img src="images/yogyakarta.png" alt="Yogyakarta">
+        <div class="destination-overlay">
+          <div class="destination-name">Yogyakarta</div>
+          <div class="destination-count">12+ Daily Routes</div>
+        </div>
+      </div>
+      <div class="destination-card" onclick="selectDestination('Surabaya')">
+        <img src="images/surabaya.png" alt="Surabaya">
+        <div class="destination-overlay">
+          <div class="destination-name">Surabaya</div>
+          <div class="destination-count">10+ Daily Routes</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Set min date to today
+    document.getElementById('tanggal').min = new Date().toISOString().split('T')[0];
+
+    function handleSearch(e) {
+      e.preventDefault();
+      const asal = document.getElementById('asal').value;
+      const tujuan = document.getElementById('tujuan').value;
+      const tanggal = document.getElementById('tanggal').value;
+
+      if (asal === tujuan) {
+        alert('Kota asal dan tujuan tidak boleh sama!');
+        return;
+      }
+
+      window.location.href = `select-bus.html?asal=${asal}&tujuan=${tujuan}&tanggal=${tanggal}`;
+    }
+
+    function selectDestination(city) {
+      // Auto-fill destination and scroll to form
+      document.getElementById('tujuan').value = city;
+      document.querySelector('.booking-card').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
 </body>
+
 </html>
