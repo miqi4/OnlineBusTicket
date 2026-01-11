@@ -1,21 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const busController = require('../controllers/busController');
 
-router.get('/', (req, res) => {
-  const { asal, tujuan } = req.query;
-  let sql = "SELECT * FROM bus";
-  const params = [];
+router.get('/', busController.getBuses);
 
-  if (asal && tujuan) {
-    sql += " WHERE asal = ? AND tujuan = ?";
-    params.push(asal, tujuan);
-  }
-
-  db.query(sql, params, (err, result) => {
-    if (err) throw err;
-    res.json(result);
-  });
-});
-
+router.get('/locations', busController.getLocations);
 module.exports = router;

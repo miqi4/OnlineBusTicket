@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -11,6 +12,6 @@ const pesananRoutes = require('./routes/pesanan');
 app.use('/api/bus', busRoutes);
 app.use('/api/pesanan', pesananRoutes);
 
-app.listen(3000, ()=>{
+app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
 });

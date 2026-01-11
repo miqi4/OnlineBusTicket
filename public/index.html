@@ -12,27 +12,38 @@
 <body>
   <!-- Top Bar -->
   <div class="top-bar">
-    <div>📧 contact@bustion.com</div>
-    <div>
-      <a href="#">Help</a>
-      <a href="#">Support</a>
-      <a href="#">Login</a>
+    <div class="container">
+      <div class="contact-info">
+        <span>📧 info@bustioncharter.com</span>
+        <span>📞 +1-800-555-1234</span>
+      </div>
+      <div class="open-hours">
+        🕒 Open hour : Everyday 8 AM - 8 PM
+      </div>
     </div>
   </div>
 
   <!-- Navbar -->
   <nav class="navbar">
-    <div class="logo">
-      <span>⚡</span> Bustion
+    <div class="container">
+      <div class="logo">
+        <span>⚡</span> Bustion
+      </div>
+      <div class="hamburger-menu" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Our Bus</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><button class="btn-primary mobile-only" style="padding: 0.5rem 1.5rem; width: 100%;">Get Quote</button></li>
+      </ul>
+      <button class="btn-primary desktop-only" style="padding: 0.5rem 1.5rem;">Get Quote</button>
     </div>
-    <ul class="nav-links">
-      <li><a href="#" class="active">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Our Bus</a></li>
-      <li><a href="#">Services</a></li>
-      <li><a href="#">Contact</a></li>
-    </ul>
-    <button class="btn-primary" style="padding: 0.5rem 1.5rem;">Get Quote</button>
   </nav>
 
   <div class="main-container">
@@ -41,99 +52,204 @@
       <div class="hero-content">
         <div class="company-label">BUSTION TRANSPORT COMPANY</div>
         <h1>Expertly Connecting<br>People and <span>Destinations</span></h1>
-        <p class="hero-description">Group travel redefined with modern buses, expert drivers, and personalized service
-          for every trip.</p>
+        <p class="hero-description">
+          Group travel redefined with modern buses, expert drivers, and personalized service for every trip.
+        </p>
 
         <div class="hero-buttons">
           <button class="btn-primary">Get Started</button>
           <button class="btn-dark">Our Story</button>
         </div>
-
-        <img src="images/hero_bus.png" alt="Modern Bus" class="hero-bus-image">
       </div>
     </div>
 
     <!-- Right Column -->
     <div class="right-column">
-      <!-- Driver Card -->
-      <div class="driver-card">
-        <img src="images/driver.png" alt="Bus Driver">
-        <div class="play-button">▶</div>
-      </div>
-
       <!-- Booking Form -->
       <div class="booking-card">
         <h2>Pick your Journey</h2>
         <form id="searchForm" onsubmit="handleSearch(event)">
-          <div class="form-group">
-            <select id="asal" required>
-              <option value="" disabled selected>Travel From</option>
-              <option value="Jakarta">Jakarta</option>
-              <option value="Bandung">Bandung</option>
-            </select>
+          <div class="route-selection-container">
+            <div class="form-group">
+              <label for="asal">From</label>
+              <select id="asal" required>
+                <option value="" disabled selected>Select Origin</option>
+              </select>
+            </div>
+
+            <button type="button" class="swap-route-btn" onclick="swapRoute()" title="Swap routes">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 16V4M7 4L3 8M7 4l4 4" />
+                <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+            </button>
+
+            <div class="form-group">
+              <label for="tujuan">To</label>
+              <select id="tujuan" required>
+                <option value="" disabled selected>Select Destination</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-group">
-            <select id="tujuan" required>
-              <option value="" disabled selected>Travel To</option>
-              <option value="Jakarta">Jakarta</option>
-              <option value="Bandung">Bandung</option>
-            </select>
-          </div>
-
-          <div class="form-group">
+            <label for="tanggal">Travel Date</label>
             <input type="date" id="tanggal" required>
           </div>
 
-          <div class="form-group">
-            <input type="text" placeholder="Seat Number (Optional)" disabled
-              style="background-color: #e5e7eb; cursor: not-allowed;">
-          </div>
-
-          <button type="submit" class="btn-primary btn-block">Book Now</button>
+          <button type="submit" class="btn-primary btn-block">Search Buses</button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Destinations Section -->
-  <section class="destination-section">
-    <h2 class="section-title">Discover Our Top Destinations</h2>
-    <div class="destination-grid">
-      <div class="destination-card" onclick="selectDestination('Jakarta')">
-        <img src="images/jakarta.png" alt="Jakarta">
-        <div class="destination-overlay">
-          <div class="destination-name">Jakarta</div>
-          <div class="destination-count">25+ Daily Routes</div>
+  <!-- Videotron Section -->
+  <section class="videotron-section">
+    <div class="container">
+      <div class="videotron-container">
+        <video id="videotron-player" autoplay muted loop playsinline>
+          <source id="video-source"
+            src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+
+        <button class="carousel-nav prev" onclick="changeVideo(-1)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <button class="carousel-nav next" onclick="changeVideo(1)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <div class="videotron-overlay">
+          <span id="video-title">🎥 Experience the Premium Journey</span>
         </div>
-      </div>
-      <div class="destination-card" onclick="selectDestination('Bandung')">
-        <img src="images/bandung.png" alt="Bandung">
-        <div class="destination-overlay">
-          <div class="destination-name">Bandung</div>
-          <div class="destination-count">18+ Daily Routes</div>
-        </div>
-      </div>
-      <div class="destination-card" onclick="selectDestination('Yogyakarta')">
-        <img src="images/yogyakarta.png" alt="Yogyakarta">
-        <div class="destination-overlay">
-          <div class="destination-name">Yogyakarta</div>
-          <div class="destination-count">12+ Daily Routes</div>
-        </div>
-      </div>
-      <div class="destination-card" onclick="selectDestination('Surabaya')">
-        <img src="images/surabaya.png" alt="Surabaya">
-        <div class="destination-overlay">
-          <div class="destination-name">Surabaya</div>
-          <div class="destination-count">10+ Daily Routes</div>
+
+        <div class="carousel-indicators">
+          <span class="indicator active" onclick="selectVideo(0)"></span>
+          <span class="indicator" onclick="selectVideo(1)"></span>
+          <span class="indicator" onclick="selectVideo(2)"></span>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Destinations Section -->
+  <section class="destination-section">
+    <div class="container">
+      <h2 class="section-title">Popular Destinations</h2>
+      <p class="section-subtitle">Discover the most loved routes by our travelers</p>
+
+      <div class="destination-grid">
+        <div class="destination-card" onclick="selectDestination('Jakarta')">
+          <img src="images/jakarta.png" alt="Jakarta">
+          <div class="destination-overlay">
+            <div class="destination-content">
+              <div class="destination-name">Jakarta</div>
+              <div class="destination-count">25+ Daily Routes</div>
+            </div>
+            <div class="arrow-icon">→</div>
+          </div>
+        </div>
+        <div class="destination-card" onclick="selectDestination('Bandung')">
+          <img src="images/bandung.png" alt="Bandung">
+          <div class="destination-overlay">
+            <div class="destination-content">
+              <div class="destination-name">Bandung</div>
+              <div class="destination-count">18+ Daily Routes</div>
+            </div>
+            <div class="arrow-icon">→</div>
+          </div>
+        </div>
+        <div class="destination-card" onclick="selectDestination('Yogyakarta')">
+          <img src="images/yogyakarta.png" alt="Yogyakarta">
+          <div class="destination-overlay">
+            <div class="destination-content">
+              <div class="destination-name">Yogyakarta</div>
+              <div class="destination-count">12+ Daily Routes</div>
+            </div>
+            <div class="arrow-icon">→</div>
+          </div>
+        </div>
+        <div class="destination-card" onclick="selectDestination('Surabaya')">
+          <img src="images/surabaya.png" alt="Surabaya">
+          <div class="destination-overlay">
+            <div class="destination-content">
+              <div class="destination-name">Surabaya</div>
+              <div class="destination-count">10+ Daily Routes</div>
+            </div>
+            <div class="arrow-icon">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="logo"><span>⚡</span> Bustion</div>
+          <p>Your trusted partner for comfortable and secure bus travel across Indonesia.</p>
+        </div>
+        <div class="footer-links">
+          <h3>Company</h3>
+          <a href="#">About Us</a>
+          <a href="#">Careers</a>
+          <a href="#">Blog</a>
+        </div>
+        <div class="footer-links">
+          <h3>Support</h3>
+          <a href="#">Help Center</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Privacy Policy</a>
+        </div>
+        <div class="footer-links">
+          <h3>Contact</h3>
+          <a href="#">contact@bustion.com</a>
+          <a href="#">+62 812 3456 7890</a>
+          <div class="social-icons">
+            <a href="#">IG</a>
+            <a href="#">FB</a>
+            <a href="#">TW</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 Bustion Transport Company. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
   <script>
     // Set min date to today
     document.getElementById('tanggal').min = new Date().toISOString().split('T')[0];
+
+    // Fetch locations from API
+    fetch('/api/bus/locations')
+      .then(response => response.json())
+      .then(locations => {
+        const asalSelect = document.getElementById('asal');
+        const tujuanSelect = document.getElementById('tujuan');
+
+        locations.forEach(location => {
+          const optionAsal = document.createElement('option');
+          optionAsal.value = location;
+          optionAsal.textContent = location;
+          asalSelect.appendChild(optionAsal);
+
+          const optionTujuan = document.createElement('option');
+          optionTujuan.value = location;
+          optionTujuan.textContent = location;
+          tujuanSelect.appendChild(optionTujuan);
+        });
+      })
+      .catch(err => console.error('Error fetching locations:', err));
 
     function handleSearch(e) {
       e.preventDefault();
@@ -149,10 +265,93 @@
       window.location.href = `select-bus.html?asal=${asal}&tujuan=${tujuan}&tanggal=${tanggal}`;
     }
 
+    function swapRoute() {
+      const asalSelect = document.getElementById('asal');
+      const tujuanSelect = document.getElementById('tujuan');
+
+      const tempValue = asalSelect.value;
+      asalSelect.value = tujuanSelect.value;
+      tujuanSelect.value = tempValue;
+    }
+
+    function toggleMenu() {
+      const navLinks = document.getElementById('nav-links');
+      navLinks.classList.toggle('active');
+    }
+
     function selectDestination(city) {
       // Auto-fill destination and scroll to form
       document.getElementById('tujuan').value = city;
       document.querySelector('.booking-card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Videotron Carousel
+    const videos = [
+      {
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        title: '🎥 Experience the Premium Journey'
+      },
+      {
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+        title: '🚌 Discover Comfortable Travel'
+      },
+      {
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        title: '✨ Your Adventure Awaits'
+      }
+    ];
+
+    let currentVideoIndex = 0;
+
+    function changeVideo(direction) {
+      currentVideoIndex = (currentVideoIndex + direction + videos.length) % videos.length;
+      updateVideo();
+    }
+
+    function selectVideo(index) {
+      currentVideoIndex = index;
+      updateVideo();
+    }
+
+    function updateVideo() {
+      const videoPlayer = document.getElementById('videotron-player');
+      const videoSource = document.getElementById('video-source');
+      const videoTitle = document.getElementById('video-title');
+      const indicators = document.querySelectorAll('.indicator');
+
+      // Update video source
+      videoSource.src = videos[currentVideoIndex].url;
+      videoTitle.textContent = videos[currentVideoIndex].title;
+      videoPlayer.load();
+
+      // Update indicators
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentVideoIndex);
+      });
+    }
+
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const videotronContainer = document.querySelector('.videotron-container');
+
+    videotronContainer.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    videotronContainer.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      if (touchEndX < touchStartX - 50) {
+        changeVideo(1); // Swipe left - next
+      }
+      if (touchEndX > touchStartX + 50) {
+        changeVideo(-1); // Swipe right - prev
+      }
     }
   </script>
 </body>
