@@ -45,63 +45,99 @@
       <button class="btn-primary desktop-only" style="padding: 0.5rem 1.5rem;">Get Quote</button>
     </div>
   </nav>
+  <!-- HERO BACKGROUND WITH CITY -->
+  <section class="hero-city-bg">
 
-  <div class="main-container">
-    <!-- Left Column -->
-    <div class="left-column">
-      <div class="hero-content">
-        <div class="company-label">BUSTION TRANSPORT COMPANY</div>
-        <h1>Expertly Connecting<br>People and <span>Destinations</span></h1>
-        <p class="hero-description">
-          Group travel redefined with modern buses, expert drivers, and personalized service for every trip.
-        </p>
+    <!-- City moving background -->
+    <div class="city-loop">
+      <img src="images/city.png" class="city">
+      <img src="images/city.png" class="city">
+      <img src="images/city.png" class="city">
+    </div>
 
-        <div class="hero-buttons">
-          <button class="btn-primary">Get Started</button>
-          <button class="btn-dark">Our Story</button>
+    <!-- Bus -->
+    <img src="images/bus.png" class="bus-moving">
+
+    <!-- Existing Hero Content -->
+    <div class="main-container">
+      <!-- Left Column -->
+      <div class="left-column">
+        <div class="hero-content">
+          <div class="company-label">BUSTION TRANSPORT COMPANY</div>
+          <h1>Expertly Connecting<br>People and <span>Destinations</span></h1>
+          <p class="hero-description">
+            Group travel redefined with modern buses, expert drivers, and personalized service for every trip.
+          </p>
+
+          <div class="hero-buttons">
+            <button class="btn-primary">Get Started</button>
+            <button class="btn-dark">Our Story</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-column">
+        <!-- Booking Form -->
+        <div class="booking-card">
+          <h2>Pick your Journey</h2>
+          <form id="searchForm" onsubmit="handleSearch(event)">
+            <div class="route-selection-container">
+              <div class="form-group">
+                <label for="asal">From</label>
+                <select id="asal" required>
+                  <option value="" disabled selected>Select Origin</option>
+                </select>
+              </div>
+
+              <button type="button" class="swap-route-btn" onclick="swapRoute()" title="Swap routes">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 16V4M7 4L3 8M7 4l4 4" />
+                  <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+              </button>
+
+              <div class="form-group">
+                <label for="tujuan">To</label>
+                <select id="tujuan" required>
+                  <option value="" disabled selected>Select Destination</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="tanggal">Travel Date</label>
+              <input type="date" id="tanggal" required>
+            </div>
+
+            <button type="submit" class="btn-primary btn-block">Search Buses</button>
+          </form>
         </div>
       </div>
     </div>
 
-    <!-- Right Column -->
-    <div class="right-column">
-      <!-- Booking Form -->
-      <div class="booking-card">
-        <h2>Pick your Journey</h2>
-        <form id="searchForm" onsubmit="handleSearch(event)">
-          <div class="route-selection-container">
-            <div class="form-group">
-              <label for="asal">From</label>
-              <select id="asal" required>
-                <option value="" disabled selected>Select Origin</option>
-              </select>
-            </div>
-
-            <button type="button" class="swap-route-btn" onclick="swapRoute()" title="Swap routes">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M7 16V4M7 4L3 8M7 4l4 4" />
-                <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
-              </svg>
-            </button>
-
-            <div class="form-group">
-              <label for="tujuan">To</label>
-              <select id="tujuan" required>
-                <option value="" disabled selected>Select Destination</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="tanggal">Travel Date</label>
-            <input type="date" id="tanggal" required>
-          </div>
-
-          <button type="submit" class="btn-primary btn-block">Search Buses</button>
-        </form>
+    <!-- Bus Companies Ticker -->
+    <div class="bus-companies-ticker">
+      <div class="ticker-wrapper">
+        <div class="ticker-item">Sinar Jaya</div>
+        <div class="ticker-item">Harapan Jaya</div>
+        <div class="ticker-item">Kramat Djati</div>
+        <div class="ticker-item">Pahala Kencana</div>
+        <div class="ticker-item">Rosalia Indah</div>
+        <div class="ticker-item">Gunung Harta</div>
+        <div class="ticker-item">Nusantara</div>
+        <div class="ticker-item">Sinar Jaya</div>
+        <div class="ticker-item">Harapan Jaya</div>
+        <div class="ticker-item">Kramat Djati</div>
+        <div class="ticker-item">Pahala Kencana</div>
+        <div class="ticker-item">Rosalia Indah</div>
+        <div class="ticker-item">Gunung Harta</div>
+        <div class="ticker-item">Nusantara</div>
       </div>
     </div>
-  </div>
+
+  </section>
+
 
   <!-- Videotron Section -->
   <section class="videotron-section">

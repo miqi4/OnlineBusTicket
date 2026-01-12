@@ -13,6 +13,128 @@
     --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.25);
 }
 
+/* === HERO FULL CITY BACKGROUND === */
+.hero-city-bg {
+    position: relative;
+    width: 100%;
+    height: 90vh;
+    overflow: hidden;
+    background: linear-gradient(#87CEEB 0%, #bfefff 30%, #ffffff 100%);
+}
+
+/* City only covers 70% bottom */
+.city-loop {
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    height: 80%;
+    display: flex;
+    width: max-content;
+    animation: cityMove 40s linear infinite;
+    z-index: 1;
+}
+
+.city {
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+    opacity: 0.25;
+    /* transparansi kota */
+}
+
+
+.bus-moving {
+    position: absolute;
+    bottom: 120px;
+    opacity: 0.9;
+    /* naik lebih ke atas */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    /* bus diperbesar */
+    z-index: 3;
+    animation: busBounce 1.5s ease-in-out infinite;
+}
+
+
+
+/* Keep hero content above */
+.main-container {
+    position: relative;
+    z-index: 4;
+}
+
+
+/* Animations */
+@keyframes cityMove {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes busBounce {
+
+    0%,
+    100% {
+        transform: translate(-50%, 0);
+    }
+
+    50% {
+        transform: translate(-50%, -3px);
+    }
+}
+
+/* Bus Companies Ticker */
+.bus-companies-ticker {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(90deg, rgba(91, 76, 219, 0.95) 0%, rgba(91, 76, 219, 0.85) 100%);
+    overflow: hidden;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.ticker-wrapper {
+    display: flex;
+    width: max-content;
+    animation: tickerScroll 30s linear infinite;
+}
+
+.ticker-item {
+    display: flex;
+    align-items: center;
+    padding: 0 3rem;
+    white-space: nowrap;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    gap: 0.5rem;
+}
+
+.ticker-item::before {
+    content: '🚌';
+    font-size: 1.5rem;
+}
+
+@keyframes tickerScroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -244,10 +366,16 @@ body>* {
     .right-column {
         align-items: center;
         width: 100%;
+
     }
 
     .booking-card {
         max-width: 100%;
+    }
+
+    .bus-moving {
+        width: 380px;
+        bottom: 80px;
     }
 }
 
@@ -258,6 +386,7 @@ body>* {
     position: relative;
     z-index: 10;
     padding-top: 2rem;
+    bottom: 50px;
 }
 
 .company-label {
@@ -283,8 +412,10 @@ h1 span {
     -webkit-text-fill-color: initial;
 }
 
+
 .hero-description {
-    color: var(--gray);
+    color: #4b4b4b;
+    font-weight: 600;
     margin-bottom: 2rem;
     font-size: 1rem;
     line-height: 1.6;
@@ -609,6 +740,7 @@ h1 span {
     flex-direction: column;
     align-items: flex-end;
     position: relative;
+    bottom: 50px;
 }
 
 @media (max-width: 968px) {
@@ -1065,4 +1197,511 @@ select:focus {
 .container-full {
     width: 100%;
     min-height: 100vh;
+}
+
+/* ===================================================
+   COMPREHENSIVE RESPONSIVE DESIGN
+   =================================================== */
+
+/* === TABLET (768px - 1024px) === */
+@media (max-width: 1024px) {
+    .hero-city-bg {
+        height: 85vh;
+    }
+
+    .main-container {
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+
+    h1 {
+        font-size: 3rem;
+    }
+
+    .bus-moving {
+        width: 420px;
+        bottom: 100px;
+    }
+
+    .city-loop {
+        bottom: 70px;
+    }
+
+    .bus-companies-ticker {
+        height: 70px;
+    }
+
+    .ticker-item {
+        font-size: 1rem;
+        padding: 0 2.5rem;
+    }
+
+    .ticker-item::before {
+        font-size: 1.3rem;
+    }
+}
+
+/* === TABLET PORTRAIT & MOBILE LARGE (768px) === */
+@media (max-width: 768px) {
+    .hero-city-bg {
+        height: auto;
+        min-height: 100vh;
+        padding-bottom: 0;
+    }
+
+    .main-container {
+        padding: 1rem;
+        min-height: auto;
+    }
+
+    /* Remove fixed bottom positioning on mobile */
+    .hero-content {
+        bottom: 0 !important;
+        padding-bottom: 2rem;
+    }
+
+    .right-column {
+        bottom: 0 !important;
+        padding-bottom: 2rem;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        line-height: 1.1;
+    }
+
+    .hero-description {
+        font-size: 0.95rem;
+    }
+
+    .company-label {
+        font-size: 0.7rem;
+    }
+
+    .hero-buttons {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .hero-buttons button {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    /* City and bus smaller on tablets */
+    .bus-moving {
+        width: 350px;
+        bottom: 90px;
+    }
+
+    .city-loop {
+        height: 75%;
+        bottom: 60px;
+    }
+
+    .bus-companies-ticker {
+        height: 60px;
+    }
+
+    .ticker-item {
+        font-size: 0.9rem;
+        padding: 0 2rem;
+    }
+
+    .ticker-item::before {
+        font-size: 1.2rem;
+    }
+
+    /* Top bar responsiveness */
+    .top-bar .container {
+        padding: 0.5rem 1rem;
+        font-size: 0.7rem;
+    }
+
+    .contact-info {
+        gap: 1rem;
+    }
+
+    .contact-info span:last-child {
+        display: none;
+    }
+
+    /* Booking card full width */
+    .booking-card {
+        padding: 1.5rem;
+    }
+
+    .booking-card h2 {
+        font-size: 1.3rem;
+    }
+
+    /* Form improvements */
+    input,
+    select {
+        font-size: 0.95rem;
+        padding: 0.7rem 0.8rem;
+    }
+
+    .btn-primary {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* Swap button responsive */
+    .swap-route-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .swap-route-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* === MOBILE (480px - 600px) === */
+@media (max-width: 600px) {
+    .hero-city-bg {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .hero-description {
+        font-size: 0.9rem;
+        max-width: 100%;
+    }
+
+    .bus-moving {
+        width: 280px;
+        bottom: 70px;
+    }
+
+    .city-loop {
+        height: 70%;
+        bottom: 50px;
+    }
+
+    .bus-companies-ticker {
+        height: 50px;
+    }
+
+    .ticker-item {
+        font-size: 0.8rem;
+        padding: 0 1.5rem;
+    }
+
+    .ticker-item::before {
+        font-size: 1rem;
+    }
+
+    /* Hero buttons stack properly */
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-buttons button {
+        width: 100%;
+        min-width: auto;
+    }
+
+    /* Booking card */
+    .booking-card {
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+    }
+
+    .booking-card h2 {
+        font-size: 1.2rem;
+    }
+
+    /* Destination grid */
+    .destination-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .destination-card {
+        height: 150px;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.9rem;
+    }
+}
+
+/* === SMALL MOBILE (< 480px) === */
+@media (max-width: 480px) {
+    .hero-city-bg {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .main-container {
+        padding: 0.75rem;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .company-label {
+        font-size: 0.65rem;
+    }
+
+    .hero-description {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Very small bus and city */
+    .bus-moving {
+        width: 220px;
+        bottom: 60px;
+    }
+
+    .city-loop {
+        height: 65%;
+        bottom: 50px;
+    }
+
+    .bus-companies-ticker {
+        height: 45px;
+    }
+
+    .ticker-item {
+        font-size: 0.7rem;
+        padding: 0 1rem;
+    }
+
+    .ticker-item::before {
+        font-size: 0.9rem;
+    }
+
+    /* Top bar compact */
+    .top-bar {
+        font-size: 0.65rem;
+    }
+
+    .top-bar .container {
+        padding: 0.4rem 0.75rem;
+        flex-direction: column;
+        gap: 0.25rem;
+        text-align: center;
+    }
+
+    .contact-info {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .open-hours {
+        font-size: 0.65rem;
+    }
+
+    /* Navbar */
+    .navbar {
+        padding: 0.75rem;
+    }
+
+    .logo {
+        font-size: 1.25rem;
+    }
+
+    /* Booking form */
+    .booking-card {
+        padding: 1rem;
+    }
+
+    .booking-card h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.85rem;
+    }
+
+    .form-group label {
+        font-size: 0.75rem;
+        margin-bottom: 0.35rem;
+    }
+
+    input,
+    select {
+        padding: 0.65rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
+    }
+
+    .swap-route-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .swap-route-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Destination section */
+    .destination-section {
+        padding: 2rem 0;
+    }
+
+    .destination-grid {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+    }
+
+    .destination-card {
+        height: 180px;
+    }
+
+    .destination-name {
+        font-size: 1.2rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.85rem;
+    }
+
+    /* Videotron overlay text */
+    .videotron-overlay {
+        left: 1rem;
+        bottom: 1.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    /* Footer */
+    .footer {
+        padding: 2rem 1rem;
+    }
+
+    .footer-brand p,
+    .footer-links a {
+        font-size: 0.85rem;
+    }
+
+    /* Bus grid for select page */
+    .bus-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1.25rem;
+    }
+
+    .page-header {
+        padding: 2rem 1rem 1.5rem;
+    }
+
+    .page-header h2 {
+        font-size: 1.75rem;
+    }
+}
+
+/* === EXTRA SMALL MOBILE (< 360px) === */
+@media (max-width: 360px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .bus-moving {
+        width: 180px;
+        bottom: 55px;
+    }
+
+    .city-loop {
+        bottom: 45px;
+    }
+
+    .bus-companies-ticker {
+        height: 40px;
+    }
+
+    .ticker-item {
+        font-size: 0.65rem;
+        padding: 0 0.75rem;
+    }
+
+    .booking-card {
+        padding: 0.85rem;
+    }
+
+    .hero-buttons button {
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* === LANDSCAPE MOBILE FIXES === */
+@media (max-height: 500px) and (orientation: landscape) {
+    .hero-city-bg {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .bus-moving {
+        width: 200px;
+        bottom: 50px;
+    }
+
+    .city-loop {
+        height: 60%;
+        bottom: 40px;
+    }
+
+    .main-container {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .hero-description {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-buttons {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* === ENSURE TOUCH TARGETS ARE ADEQUATE === */
+@media (max-width: 768px) {
+
+    /* Minimum touch target size for mobile */
+    button,
+    .btn-primary,
+    .btn-dark,
+    .swap-route-btn,
+    input[type="submit"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .nav-links a {
+        padding: 0.75rem 0;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
 }
