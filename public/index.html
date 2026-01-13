@@ -40,9 +40,9 @@
         <li><a href="#">Our Bus</a></li>
         <li><a href="#">Services</a></li>
         <li><a href="#">Contact</a></li>
-        <li><button class="btn-primary mobile-only" style="padding: 0.5rem 1.5rem; width: 100%;">Get Quote</button></li>
+        <li><button class="btn-primary mobile-only" style="padding: 0.5rem 1.5rem; width: 100%;">Login</button></li>
       </ul>
-      <button class="btn-primary desktop-only" style="padding: 0.5rem 1.5rem;">Get Quote</button>
+      <button class="btn-primary desktop-only" style="padding: 0.5rem 1.5rem;">Login</button>
     </div>
   </nav>
   <!-- HERO BACKGROUND WITH CITY -->
@@ -389,6 +389,38 @@
         changeVideo(-1); // Swipe right - prev
       }
     }
+    // Check auth status
+    fetch('/api/auth/me')
+      .then(res => {
+        if (res.ok) return res.json();
+        throw new Error('Not logged in');
+      })
+      .then(user => {
+        // Update UI for logged in user
+        const navButtons = document.querySelectorAll('.btn-primary');
+        navButtons.forEach(btn => {
+          if (btn.textContent === 'Login') {
+            btn.textContent = `Hi, ${user.nama.split(' ')[0]}`;
+            btn.onclick = () => {
+              if (confirm('Do you want to logout?')) {
+                fetch('/api/auth/logout', { method: 'POST' })
+                  .then(() => window.location.reload());
+              }
+            };
+            // Change style to indicate logged in
+            btn.style.backgroundColor = '#10b981'; // Green
+          }
+        });
+      })
+      .catch(() => {
+        // Not logged in - ensure buttons go to login
+        const navButtons = document.querySelectorAll('.btn-primary');
+        navButtons.forEach(btn => {
+          if (btn.textContent === 'Login') {
+            btn.onclick = () => window.location.href = 'login.html';
+          }
+        });
+      });
   </script>
 </body>
 

@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('./config/db');
 
 const queries = [
     "ALTER TABLE bus ADD COLUMN asal VARCHAR(50)",
@@ -12,13 +12,14 @@ function runQueries(index) {
         console.log("Migration complete!");
         process.exit(0);
     }
+
     db.query(queries[index], (err, result) => {
         if (err) {
             // Ignore error if column already exists (duplicate column name)
             if (err.code === 'ER_DUP_FIELDNAME') {
-                console.log(`Skipping ${queries[index]} (Column likely exists)`);
+                console.log(`Skipping query: ${queries[index]} (Column likely exists)`);
             } else {
-                console.error(err);
+                console.error('Error executing query:', err);
             }
         } else {
             console.log(`Executed: ${queries[index]}`);

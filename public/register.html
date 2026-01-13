@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Bustion Transport</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo">⚡ Bustion</div>
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join us for a premium travel experience</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label class="form-label" for="nama">Full Name</label>
+                <input type="text" id="nama" class="form-control" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Create a password" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="role">I am a</label>
+                <select id="role" class="form-control" onchange="toggleCompanyField()">
+                    <option value="customer">Customer</option>
+                    <option value="operator">Bus Operator</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="companyField" style="display: none;">
+                <label class="form-label" for="nama_perusahaan">Bus Company</label>
+                <select id="nama_perusahaan" class="form-control">
+                    <option value="" disabled selected>Select your company</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-auth">Sign Up</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html" class="auth-link">Sign in</a>
+        </div>
+    </div>
+
+    <script>
+        // Fetch companies for dropdown
+        fetch('/api/bus/companies')
+            .then(res => res.json())
+            .then(companies => {
+                const select = document.getElementById('nama_perusahaan');
+                companies.forEach(company => {
+                    const option = document.createElement('option');
+                    option.value = company;
+                    option.textContent = company;
+                    select.appendChild(option);
+                });
+            })
+            .catch(console.error);
+
+        function toggleCompanyField() {
+            const role = document.getElementById('role').value;
+            const companyField = document.getElementById('companyField');
+            const companyInput = document.getElementById('nama_perusahaan');
+
+            if (role === 'operator') {
+                companyField.style.display = 'block';
+                companyInput.required = true;
+            } else {
+                companyField.style.display = 'none';
+                companyInput.required = false;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+
+            const nama = document.getElementById('nama').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const nama_perusahaan = document.getElementById('nama_perusahaan').value;
+
+            const alertBox = document.getElementById('alert');
+            const btn = document.querySelector('.btn-auth');
+
+            // Reset alert
+            alertBox.style.display = 'none';
+            alertBox.className = 'alert';
+
+            // Loading state
+            const originalText = btn.textContent;
+            btn.textContent = 'Creating account...';
+            btn.disabled = true;
+
+            const payload = { nama, email, password, role };
+            if (role === 'operator') {
+                payload.nama_perusahaan = nama_perusahaan;
+            }
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alertBox.textContent = 'Registration successful! Redirecting to login...';
+                    alertBox.className = 'alert alert-success';
+                    alertBox.style.display = 'block';
+
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || 'Registration failed');
+                }
+            } catch (error) {
+                alertBox.textContent = error.message;
+                alertBox.className = 'alert alert-error';
+                alertBox.style.display = 'block';
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
