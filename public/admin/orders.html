@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar .active {
+            background-color: #0d6efd;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h3 class="text-center mb-4">Admin Panel</h3>
+        <a href="dashboard.html"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+        <a href="companies.html"><i class="fas fa-building me-2"></i>Companies</a>
+        <a href="routes.html"><i class="fas fa-route me-2"></i>Routes</a>
+        <a href="schedules.html"><i class="fas fa-bus me-2"></i>Schedules</a>
+        <a href="orders.html" class="active"><i class="fas fa-ticket-alt me-2"></i>Orders</a>
+        <a href="/index.html" class="mt-5"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h2 class="mb-4">Manage Orders</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Passenger</th>
+                            <th>Bus</th>
+                            <th>Time</th>
+                            <th>Seat</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reschedule Modal -->
+    <div class="modal fade" id="rescheduleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reschedule Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="rescheduleOrderId">
+                    <div class="mb-3">
+                        <label class="form-label">Select New Bus</label>
+                        <select class="form-select" id="newBusSelect">
+                            <!-- Buses will be populated here -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveReschedule()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Seat Modal -->
+    <div class="modal fade" id="seatModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Move Seat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="seatOrderId">
+                    <div class="mb-3">
+                        <label class="form-label">New Seat Number</label>
+                        <input type="number" class="form-control" id="newSeatInput">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveSeat()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = '/api/admin/orders';
+        let rescheduleModal, seatModal;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            rescheduleModal = new bootstrap.Modal(document.getElementById('rescheduleModal'));
+            seatModal = new bootstrap.Modal(document.getElementById('seatModal'));
+            loadOrders();
+            loadBuses();
+        });
+
+        async function loadOrders() {
+            const res = await fetch(API_URL);
+            const orders = await res.json();
+            const tbody = document.getElementById('orderTableBody');
+            tbody.innerHTML = '';
+            orders.forEach(o => {
+                tbody.innerHTML += `
+                <tr>
+                    <td>${o.id}</td>
+                    <td>${o.nama_penumpang}</td>
+                    <td>${o.nama_bus}</td>
+                    <td>${o.jam}</td>
+                    <td>${o.kursi}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info text-white" onclick="openReschedule(${o.id})">Reschedule</button>
+                        <button class="btn btn-sm btn-warning" onclick="openSeat(${o.id}, ${o.kursi})">Move Seat</button>
+                    </td>
+                </tr>
+            `;
+            });
+        }
+
+        async function loadBuses() {
+            const res = await fetch('/api/admin/buses');
+            const buses = await res.json();
+            const select = document.getElementById('newBusSelect');
+            buses.forEach(b => {
+                select.innerHTML += `<option value="${b.id}">${b.nama_bus} (${b.jam}) - ${b.nama_perusahaan_real || b.nama_perusahaan}</option>`;
+            });
+        }
+
+        function openReschedule(id) {
+            document.getElementById('rescheduleOrderId').value = id;
+            rescheduleModal.show();
+        }
+
+        async function saveReschedule() {
+            const id = document.getElementById('rescheduleOrderId').value;
+            const busId = document.getElementById('newBusSelect').value;
+
+            await fetch(`${API_URL}/${id}/reschedule`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bus_id: busId })
+            });
+
+            rescheduleModal.hide();
+            loadOrders();
+        }
+
+        function openSeat(id, currentSeat) {
+            document.getElementById('seatOrderId').value = id;
+            document.getElementById('newSeatInput').value = currentSeat;
+            seatModal.show();
+        }
+
+        async function saveSeat() {
+            const id = document.getElementById('seatOrderId').value;
+            const seat = document.getElementById('newSeatInput').value;
+
+            await fetch(`${API_URL}/${id}/move-seat`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kursi: seat })
+            });
+
+            seatModal.hide();
+            loadOrders();
+        }
+    </script>
+</body>
+
+</html>
