@@ -19,8 +19,8 @@ exports.getLocations = (req, res) => {
             res.status(500).send("Database Error");
             return;
         }
-        // Extract unique city names from the result
-        const locations = result.map(row => row.asal);
+        // Extract city names from the result
+        const locations = result.map(row => row.nama_kota);
         res.json(locations);
     });
 };

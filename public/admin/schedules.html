@@ -52,8 +52,8 @@
     <div class="sidebar">
         <h3 class="text-center mb-4">Admin Panel</h3>
         <a href="dashboard.html"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+        <a href="cities.html"><i class="fas fa-map-marker-alt me-2"></i>Cities</a>
         <a href="companies.html"><i class="fas fa-building me-2"></i>Companies</a>
-        <a href="routes.html"><i class="fas fa-route me-2"></i>Routes</a>
         <a href="schedules.html" class="active"><i class="fas fa-bus me-2"></i>Schedules</a>
         <a href="orders.html"><i class="fas fa-ticket-alt me-2"></i>Orders</a>
         <a href="/index.html" class="mt-5"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
@@ -110,11 +110,19 @@
                                 <option value="">Select Company</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Route</label>
-                            <select class="form-select" id="busRoute" required>
-                                <option value="">Select Route</option>
-                            </select>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Origin</label>
+                                <select class="form-select" id="busOrigin" required>
+                                    <option value="">Select Origin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Destination</label>
+                                <select class="form-select" id="busDestination" required>
+                                    <option value="">Select Destination</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -124,6 +132,16 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Price</label>
                                 <input type="number" class="form-control" id="busPrice" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Distance (km)</label>
+                                <input type="number" class="form-control" id="busDistance">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Duration (hours)</label>
+                                <input type="number" class="form-control" id="busDuration">
                             </div>
                         </div>
                     </form>
@@ -144,12 +162,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             busModal = new bootstrap.Modal(document.getElementById('busModal'));
             loadCompanies();
+            loadCities();
             loadBuses();
-
-            // Filter routes when company changes
-            document.getElementById('busCompany').addEventListener('change', function () {
-                loadRoutes(this.value);
-            });
         });
 
         async function loadCompanies() {
@@ -161,16 +175,16 @@
             });
         }
 
-        async function loadRoutes(companyId) {
-            const routeSelect = document.getElementById('busRoute');
-            routeSelect.innerHTML = '<option value="">Select Route</option>';
+        async function loadCities() {
+            const cities = await fetch('/api/admin/cities').then(res => res.json());
+            const originSelect = document.getElementById('busOrigin');
+            const destSelect = document.getElementById('busDestination');
 
-            if (!companyId) return;
+            const options = '<option value="">Select City</option>' +
+                cities.map(c => `<option value="${c.id}">${c.nama_kota}</option>`).join('');
 
-            const routes = await fetch(`/api/admin/routes?company_id=${companyId}`).then(res => res.json());
-            routes.forEach(r => {
-                routeSelect.innerHTML += `<option value="${r.id}">${r.asal} - ${r.tujuan}</option>`;
-            });
+            originSelect.innerHTML = options;
+            destSelect.innerHTML = options;
         }
 
         async function loadBuses() {
@@ -179,8 +193,8 @@
             const tbody = document.getElementById('busTableBody');
             tbody.innerHTML = '';
             buses.forEach(b => {
-                const routeText = b.rute_asal ? `${b.rute_asal} - ${b.rute_tujuan}` : `${b.asal} - ${b.tujuan}`;
-                const companyText = b.nama_perusahaan_real || b.nama_perusahaan;
+                const routeText = `${b.asal_kota || '-'} - ${b.tujuan_kota || '-'}`;
+                const companyText = b.nama_perusahaan || '-';
 
                 tbody.innerHTML += `
                 <tr>
@@ -191,7 +205,7 @@
                     <td>${b.jam}</td>
                     <td>${b.harga}</td>
                     <td>
-                        <button class="btn btn-sm btn-warning" onclick="editBus(${b.id}, '${b.nama_bus}', ${b.company_id}, ${b.route_id}, '${b.jam}', ${b.harga})">Edit</button>
+                        <button class="btn btn-sm btn-warning" onclick="editBus(${b.id}, '${b.nama_bus}', ${b.company_id}, ${b.origin_city_id}, ${b.destination_city_id}, '${b.jam}', ${b.harga}, ${b.distance_km || 0}, ${b.duration_hours || 0})">Edit</button>
                         <button class="btn btn-sm btn-danger" onclick="deleteBus(${b.id})">Delete</button>
                     </td>
                 </tr>
@@ -203,41 +217,35 @@
             document.getElementById('busId').value = '';
             document.getElementById('busForm').reset();
             document.getElementById('modalTitle').innerText = 'Add Schedule';
-            // Ensure routes are reset when adding a new schedule
-            document.getElementById('busRoute').innerHTML = '<option value="">Select Route</option>';
         }
 
-        function editBus(id, nama, companyId, routeId, jam, harga) {
+        function editBus(id, nama, companyId, originId, destId, jam, harga, distance, duration) {
             document.getElementById('busId').value = id;
             document.getElementById('busName').value = nama;
             document.getElementById('busCompany').value = companyId || '';
-
-            // Load routes for this company then set value
-            loadRoutes(companyId).then(() => {
-                document.getElementById('busRoute').value = routeId || '';
-            });
-
+            document.getElementById('busOrigin').value = originId || '';
+            document.getElementById('busDestination').value = destId || '';
             document.getElementById('busTime').value = jam;
             document.getElementById('busPrice').value = harga;
+            document.getElementById('busDistance').value = distance;
+            document.getElementById('busDuration').value = duration;
+
             document.getElementById('modalTitle').innerText = 'Edit Schedule';
             busModal.show();
         }
 
         async function saveBus() {
             const id = document.getElementById('busId').value;
-            const companySelect = document.getElementById('busCompany');
-            const routeSelect = document.getElementById('busRoute');
 
             const data = {
                 nama_bus: document.getElementById('busName').value,
-                company_id: companySelect.value,
-                route_id: routeSelect.value,
+                company_id: document.getElementById('busCompany').value,
+                origin_city_id: document.getElementById('busOrigin').value,
+                destination_city_id: document.getElementById('busDestination').value,
                 jam: document.getElementById('busTime').value,
                 harga: document.getElementById('busPrice').value,
-                // Fallback for legacy columns
-                nama_perusahaan: companySelect.options[companySelect.selectedIndex].text,
-                asal: routeSelect.options[routeSelect.selectedIndex].text.split(' - ')[0],
-                tujuan: routeSelect.options[routeSelect.selectedIndex].text.split(' - ')[1]
+                distance_km: document.getElementById('busDistance').value,
+                duration_hours: document.getElementById('busDuration').value
             };
 
             const method = id ? 'PUT' : 'POST';

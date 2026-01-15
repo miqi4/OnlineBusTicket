@@ -3,16 +3,30 @@ const db = require('../config/db');
 const Bus = {
     getAll: (callback) => {
         const sql = `
-            SELECT b.*, c.nama AS nama_bus, c.nama AS nama_perusahaan_real, r.asal AS rute_asal, r.tujuan AS rute_tujuan 
+            SELECT b.*, 
+                   c1.nama_kota AS asal_kota, 
+                   c2.nama_kota AS tujuan_kota,
+                   c.nama AS nama_perusahaan
             FROM bus b
             LEFT JOIN companies c ON b.company_id = c.id
-            LEFT JOIN routes r ON b.route_id = r.id
+            LEFT JOIN cities c1 ON b.origin_city_id = c1.id
+            LEFT JOIN cities c2 ON b.destination_city_id = c2.id
         `;
         db.query(sql, callback);
     },
 
     getById: (id, callback) => {
-        const sql = "SELECT * FROM bus WHERE id = ?";
+        const sql = `
+            SELECT b.*, 
+                   c1.nama_kota AS asal_kota, 
+                   c2.nama_kota AS tujuan_kota,
+                   c.nama AS nama_perusahaan
+            FROM bus b
+            LEFT JOIN companies c ON b.company_id = c.id
+            LEFT JOIN cities c1 ON b.origin_city_id = c1.id
+            LEFT JOIN cities c2 ON b.destination_city_id = c2.id
+            WHERE b.id = ?
+        `;
         db.query(sql, [id], (err, results) => {
             if (err) return callback(err, null);
             return callback(null, results[0]);
@@ -20,14 +34,32 @@ const Bus = {
     },
 
     create: (data, callback) => {
-        const sql = "INSERT INTO bus (nama_bus, company_id, route_id, jam, harga, asal, tujuan, nama_perusahaan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        // Note: asal, tujuan, nama_perusahaan are kept for backward compatibility or can be derived
-        db.query(sql, [data.nama_bus, data.company_id, data.route_id, data.jam, data.harga, data.asal, data.tujuan, data.nama_perusahaan], callback);
+        const sql = "INSERT INTO bus (nama_bus, company_id, origin_city_id, destination_city_id, jam, harga, distance_km, duration_hours) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        db.query(sql, [
+            data.nama_bus,
+            data.company_id,
+            data.origin_city_id,
+            data.destination_city_id,
+            data.jam,
+            data.harga,
+            data.distance_km,
+            data.duration_hours
+        ], callback);
     },
 
     update: (id, data, callback) => {
-        const sql = "UPDATE bus SET nama_bus = ?, company_id = ?, route_id = ?, jam = ?, harga = ?, asal = ?, tujuan = ?, nama_perusahaan = ? WHERE id = ?";
-        db.query(sql, [data.nama_bus, data.company_id, data.route_id, data.jam, data.harga, data.asal, data.tujuan, data.nama_perusahaan, id], callback);
+        const sql = "UPDATE bus SET nama_bus = ?, company_id = ?, origin_city_id = ?, destination_city_id = ?, jam = ?, harga = ?, distance_km = ?, duration_hours = ? WHERE id = ?";
+        db.query(sql, [
+            data.nama_bus,
+            data.company_id,
+            data.origin_city_id,
+            data.destination_city_id,
+            data.jam,
+            data.harga,
+            data.distance_km,
+            data.duration_hours,
+            id
+        ], callback);
     },
 
     delete: (id, callback) => {
@@ -37,33 +69,27 @@ const Bus = {
 
     getBuses: (asal, tujuan, callback) => {
         let sql = `
-            SELECT b.*, c.nama AS nama_bus, c.nama AS nama_perusahaan_real 
+            SELECT b.*, 
+                   c1.nama_kota AS asal_kota, 
+                   c2.nama_kota AS tujuan_kota,
+                   c.nama AS nama_perusahaan
             FROM bus b
             LEFT JOIN companies c ON b.company_id = c.id
-            LEFT JOIN routes r ON b.route_id = r.id
+            LEFT JOIN cities c1 ON b.origin_city_id = c1.id
+            LEFT JOIN cities c2 ON b.destination_city_id = c2.id
         `;
         const params = [];
 
         if (asal && tujuan) {
-            // Check both legacy columns and route relations
-            sql += " WHERE (b.asal = ? AND b.tujuan = ?) OR (r.asal = ? AND r.tujuan = ?)";
-            params.push(asal, tujuan, asal, tujuan);
+            sql += " WHERE c1.nama_kota = ? AND c2.nama_kota = ?";
+            params.push(asal, tujuan);
         }
 
         db.query(sql, params, callback);
     },
 
     getLocations: (callback) => {
-        // Combine legacy locations and new route locations
-        const sql = `
-            SELECT DISTINCT asal FROM bus 
-            UNION 
-            SELECT DISTINCT tujuan FROM bus
-            UNION
-            SELECT DISTINCT asal FROM routes
-            UNION
-            SELECT DISTINCT tujuan FROM routes
-        `;
+        const sql = "SELECT nama_kota FROM cities ORDER BY nama_kota ASC";
         db.query(sql, callback);
     }
 };

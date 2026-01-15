@@ -11,17 +11,17 @@ const isAdmin = (req, res, next) => {
 
 router.use(isAdmin);
 
+// Cities
+router.get('/cities', AdminController.getAllCities);
+router.post('/cities', AdminController.createCity);
+router.put('/cities/:id', AdminController.updateCity);
+router.delete('/cities/:id', AdminController.deleteCity);
+
 // Companies
 router.get('/companies', AdminController.getAllCompanies);
 router.post('/companies', AdminController.createCompany);
 router.put('/companies/:id', AdminController.updateCompany);
 router.delete('/companies/:id', AdminController.deleteCompany);
-
-// Routes
-router.get('/routes', AdminController.getAllRoutes);
-router.post('/routes', AdminController.createRoute);
-router.put('/routes/:id', AdminController.updateRoute);
-router.delete('/routes/:id', AdminController.deleteRoute);
 
 // Buses (Schedules)
 router.get('/buses', AdminController.getAllBuses);
