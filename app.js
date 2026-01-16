@@ -27,6 +27,11 @@ app.use('/api/pesanan', pesananRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Secure Admin Panel
+const { requireRole } = require('./middleware/auth');
+const path = require('path');
+app.use('/admin', requireRole(['admin']), express.static(path.join(__dirname, 'admin_panel')));
+
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
 });

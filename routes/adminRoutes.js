@@ -2,14 +2,10 @@ const express = require('express');
 const router = express.Router();
 const AdminController = require('../controllers/adminController');
 
-// Middleware to check if user is admin (Placeholder - implement actual auth check)
-const isAdmin = (req, res, next) => {
-    // TODO: Implement actual admin check based on session or token
-    // For now, assuming all requests to /admin are allowed for demo/dev
-    next();
-};
+const { requireRole } = require('../middleware/auth');
 
-router.use(isAdmin);
+// Middleware to check if user is admin
+router.use(requireRole(['admin']));
 
 // Cities
 router.get('/cities', AdminController.getAllCities);
