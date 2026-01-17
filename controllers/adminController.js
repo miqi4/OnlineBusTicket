@@ -102,6 +102,23 @@ const AdminController = {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: 'Seat moved successfully' });
         });
+    },
+
+    getDashboardStats: async (req, res) => {
+        try {
+            const db = require('../config/db').promise();
+            const [companies] = await db.query("SELECT COUNT(*) as count FROM companies");
+            const [buses] = await db.query("SELECT COUNT(*) as count FROM bus");
+            const [orders] = await db.query("SELECT COUNT(*) as count FROM pesanan");
+
+            res.json({
+                companies: companies[0].count,
+                buses: buses[0].count,
+                orders: orders[0].count
+            });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
 };
 

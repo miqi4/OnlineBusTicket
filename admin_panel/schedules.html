@@ -76,7 +76,9 @@
                             <th>Bus Name</th>
                             <th>Company</th>
                             <th>Route</th>
-                            <th>Time</th>
+                            <th>Departure</th>
+                            <th>Arrival</th>
+                            <th>Seats</th>
                             <th>Price</th>
                             <th>Actions</th>
                         </tr>
@@ -127,7 +129,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Time</label>
-                                <input type="text" class="form-control" id="busTime" placeholder="HH:MM" required>
+                                <input type="time" class="form-control" id="busTime" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Price</label>
@@ -136,12 +138,12 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Distance (km)</label>
-                                <input type="number" class="form-control" id="busDistance">
+                                <label class="form-label">Estimated Arrival Time</label>
+                                <input type="time" class="form-control" id="busArrivalTime" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Duration (hours)</label>
-                                <input type="number" class="form-control" id="busDuration">
+                                <label class="form-label">Total Seats</label>
+                                <input type="number" class="form-control" id="busTotalSeats" value="40" required>
                             </div>
                         </div>
                     </form>
@@ -203,9 +205,11 @@
                     <td>${companyText}</td>
                     <td>${routeText}</td>
                     <td>${b.jam}</td>
-                    <td>${b.harga}</td>
+                    <td>${b.estimasi_sampai || '-'}</td>
+                    <td>${b.total_seats || 40}</td>
+                    <td>Rp${b.harga.toLocaleString('id-ID')}</td>
                     <td>
-                        <button class="btn btn-sm btn-warning" onclick="editBus(${b.id}, '${b.nama_bus}', ${b.company_id}, ${b.origin_city_id}, ${b.destination_city_id}, '${b.jam}', ${b.harga}, ${b.distance_km || 0}, ${b.duration_hours || 0})">Edit</button>
+                        <button class="btn btn-sm btn-warning" onclick="editBus(${b.id}, '${b.nama_bus}', ${b.company_id}, ${b.origin_city_id}, ${b.destination_city_id}, '${b.jam}', '${b.estimasi_sampai}', ${b.total_seats || 40}, ${b.harga})">Edit</button>
                         <button class="btn btn-sm btn-danger" onclick="deleteBus(${b.id})">Delete</button>
                     </td>
                 </tr>
@@ -219,16 +223,16 @@
             document.getElementById('modalTitle').innerText = 'Add Schedule';
         }
 
-        function editBus(id, nama, companyId, originId, destId, jam, harga, distance, duration) {
+        function editBus(id, nama, companyId, originId, destId, jam, estimasi, seats, harga) {
             document.getElementById('busId').value = id;
             document.getElementById('busName').value = nama;
             document.getElementById('busCompany').value = companyId || '';
             document.getElementById('busOrigin').value = originId || '';
             document.getElementById('busDestination').value = destId || '';
             document.getElementById('busTime').value = jam;
+            document.getElementById('busArrivalTime').value = estimasi;
+            document.getElementById('busTotalSeats').value = seats;
             document.getElementById('busPrice').value = harga;
-            document.getElementById('busDistance').value = distance;
-            document.getElementById('busDuration').value = duration;
 
             document.getElementById('modalTitle').innerText = 'Edit Schedule';
             busModal.show();
@@ -243,9 +247,9 @@
                 origin_city_id: document.getElementById('busOrigin').value,
                 destination_city_id: document.getElementById('busDestination').value,
                 jam: document.getElementById('busTime').value,
-                harga: document.getElementById('busPrice').value,
-                distance_km: document.getElementById('busDistance').value,
-                duration_hours: document.getElementById('busDuration').value
+                estimasi_sampai: document.getElementById('busArrivalTime').value,
+                total_seats: document.getElementById('busTotalSeats').value,
+                harga: document.getElementById('busPrice').value
             };
 
             const method = id ? 'PUT' : 'POST';

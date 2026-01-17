@@ -25,7 +25,7 @@
 
             <div class="form-group">
                 <label for="kursi">Nomor Kursi</label>
-                <input type="number" id="kursi" required min="1" max="40" placeholder="Contoh: 12">
+                <input type="number" id="kursi" required min="1" placeholder="Contoh: 12">
             </div>
 
             <div class="form-group">
@@ -91,8 +91,10 @@
                         <div class="receipt-item"><span>Bus</span><strong>${busData.nama_bus}</strong></div>
                         <div class="receipt-item"><span>Rute</span><strong>${busData.asal} ➝ ${busData.tujuan}</strong></div>
                         <div class="receipt-item"><span>Jam</span><strong>${busData.jam}</strong></div>
+                        <div class="receipt-item"><span>Total Kursi</span><strong>${busData.total_seats || 40}</strong></div>
                         <div class="receipt-item"><span>Harga</span><strong style="color: var(--primary)">Rp${busData.harga.toLocaleString('id-ID')}</strong></div>
                     `;
+                    document.getElementById('kursi').max = busData.total_seats || 40;
                 }
             } catch (error) {
                 console.error(error);

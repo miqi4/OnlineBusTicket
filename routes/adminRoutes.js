@@ -30,4 +30,7 @@ router.get('/orders', AdminController.getAllOrders);
 router.put('/orders/:id/reschedule', AdminController.rescheduleOrder);
 router.put('/orders/:id/move-seat', AdminController.moveSeat);
 
+// Stats
+router.get('/stats', AdminController.getDashboardStats);
+
 module.exports = router;

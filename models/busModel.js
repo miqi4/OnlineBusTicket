@@ -34,30 +34,30 @@ const Bus = {
     },
 
     create: (data, callback) => {
-        const sql = "INSERT INTO bus (nama_bus, company_id, origin_city_id, destination_city_id, jam, harga, distance_km, duration_hours) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        const sql = "INSERT INTO bus (nama_bus, company_id, origin_city_id, destination_city_id, jam, estimasi_sampai, total_seats, harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         db.query(sql, [
             data.nama_bus,
             data.company_id,
             data.origin_city_id,
             data.destination_city_id,
             data.jam,
-            data.harga,
-            data.distance_km,
-            data.duration_hours
+            data.estimasi_sampai,
+            data.total_seats,
+            data.harga
         ], callback);
     },
 
     update: (id, data, callback) => {
-        const sql = "UPDATE bus SET nama_bus = ?, company_id = ?, origin_city_id = ?, destination_city_id = ?, jam = ?, harga = ?, distance_km = ?, duration_hours = ? WHERE id = ?";
+        const sql = "UPDATE bus SET nama_bus = ?, company_id = ?, origin_city_id = ?, destination_city_id = ?, jam = ?, estimasi_sampai = ?, total_seats = ?, harga = ? WHERE id = ?";
         db.query(sql, [
             data.nama_bus,
             data.company_id,
             data.origin_city_id,
             data.destination_city_id,
             data.jam,
+            data.estimasi_sampai,
+            data.total_seats,
             data.harga,
-            data.distance_km,
-            data.duration_hours,
             id
         ], callback);
     },
