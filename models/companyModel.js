@@ -15,8 +15,8 @@ const Company = {
     },
 
     create: (data, callback) => {
-        const sql = "INSERT INTO companies (nama, alamat, telepon) VALUES (?, ?, ?)";
-        db.query(sql, [data.nama, data.alamat, data.telepon], callback);
+        const sql = "INSERT INTO companies (nama, alamat, telepon, email, password) VALUES (?, ?, ?, ?, ?)";
+        db.query(sql, [data.nama, data.alamat, data.telepon, data.email || null, data.password || null], callback);
     },
 
     update: (id, data, callback) => {

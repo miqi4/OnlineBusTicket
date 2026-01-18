@@ -103,6 +103,16 @@
                             <label class="form-label">Company Name</label>
                             <input type="text" class="form-control" id="companyName" required>
                         </div>
+                        <div id="addOnlyFields">
+                            <div class="mb-3">
+                                <label class="form-label">Login Email</label>
+                                <input type="email" class="form-control" id="companyEmail">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Login Password</label>
+                                <input type="password" class="form-control" id="companyPassword">
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">Address</label>
                             <textarea class="form-control" id="companyAddress"></textarea>
@@ -190,6 +200,7 @@
             document.getElementById('companyId').value = '';
             document.getElementById('companyForm').reset();
             document.getElementById('modalTitle').innerText = 'Add Company';
+            document.getElementById('addOnlyFields').style.display = 'block';
         }
 
         function editCompany(id, nama, alamat, telepon) {
@@ -198,6 +209,7 @@
             document.getElementById('companyAddress').value = alamat;
             document.getElementById('companyPhone').value = telepon;
             document.getElementById('modalTitle').innerText = 'Edit Company';
+            document.getElementById('addOnlyFields').style.display = 'none';
             companyModal.show();
         }
 
@@ -244,17 +256,32 @@
                 telepon: document.getElementById('companyPhone').value
             };
 
+            if (!id) {
+                data.email = document.getElementById('companyEmail').value;
+                data.password = document.getElementById('companyPassword').value;
+
+                if (!data.email || !data.password) {
+                    alert('Please fill in login email and password for the new company');
+                    return;
+                }
+            }
+
             const method = id ? 'PUT' : 'POST';
             const url = id ? `${API_URL}/${id}` : API_URL;
 
-            await fetch(url, {
+            const res = await fetch(url, {
                 method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
-            companyModal.hide();
-            loadCompanies();
+            if (res.ok) {
+                companyModal.hide();
+                loadCompanies();
+            } else {
+                const err = await res.json();
+                alert('Error: ' + err.error);
+            }
         }
 
         async function deleteCompany(id) {

@@ -48,11 +48,55 @@ const AdminController = {
             res.json(mappedResults);
         });
     },
-    createCompany: (req, res) => {
-        Company.create(req.body, (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.status(201).json({ id: result.insertId, ...req.body });
-        });
+    createCompany: async (req, res) => {
+        const { nama, alamat, telepon, email, password } = req.body;
+        const bcrypt = require('bcrypt');
+        const User = require('../models/userModel');
+        const db = require('../config/db');
+
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required for new companies' });
+        }
+
+        try {
+            // 1. Check if email already exists
+            User.getUserByEmail(email, async (err, existingUser) => {
+                if (err) return res.status(500).json({ error: err.message });
+                if (existingUser) return res.status(400).json({ error: 'Email already registered' });
+
+                // 2. Hash password
+                try {
+                    const hashedPassword = await bcrypt.hash(password, 10);
+
+                    // 3. Create company
+                    Company.create({ nama, alamat, telepon, email, password: hashedPassword }, async (cErr, result) => {
+                        if (cErr) return res.status(500).json({ error: cErr.message });
+                        const companyId = result.insertId;
+
+                        // 4. Create user in users table
+                        const userData = {
+                            nama: nama,
+                            email,
+                            password: hashedPassword,
+                            role: 'company',
+                            nama_perusahaan: nama
+                        };
+
+                        User.createUser(userData, (uErr) => {
+                            if (uErr) {
+                                console.error('Error creating company user:', uErr);
+                                return res.status(500).json({ error: 'Company created but failed to create login account' });
+                            }
+                            res.status(201).json({ id: companyId, message: 'Company and login account created successfully' });
+                        });
+                    });
+                } catch (hashErr) {
+                    res.status(500).json({ error: hashErr.message });
+                }
+            });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
     },
     updateCompany: (req, res) => {
         const { id } = req.params;
