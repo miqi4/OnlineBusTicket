@@ -27,6 +27,14 @@ const Company = {
     delete: (id, callback) => {
         const sql = "DELETE FROM companies WHERE id = ?";
         db.query(sql, [id], callback);
+    },
+
+    getByName: (nama, callback) => {
+        const sql = "SELECT * FROM companies WHERE nama = ?";
+        db.query(sql, [nama], (err, results) => {
+            if (err) return callback(err, null);
+            return callback(null, results[0]);
+        });
     }
 };
 

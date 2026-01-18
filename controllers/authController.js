@@ -11,8 +11,8 @@ exports.register = async (req, res) => {
     // Default role is customer if not specified
     const userRole = role || 'customer';
 
-    // If role is operator, nama_perusahaan is required
-    if (userRole === 'operator' && !nama_perusahaan) {
+    // If role is company, nama_perusahaan is required
+    if (userRole === 'company' && !nama_perusahaan) {
         return res.status(400).json({ message: 'Company name is required for operators' });
     }
 
@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
                 email,
                 password: hashedPassword,
                 role: userRole,
-                nama_perusahaan: userRole === 'operator' ? nama_perusahaan : null
+                nama_perusahaan: userRole === 'company' ? nama_perusahaan : null
             };
 
             User.createUser(newUser, (err, result) => {
@@ -62,16 +62,36 @@ exports.login = (req, res) => {
         req.session.role = user.role;
         req.session.nama_perusahaan = user.nama_perusahaan;
 
-        res.json({
-            message: 'Login successful',
-            user: {
-                id: user.id,
-                nama: user.nama,
-                email: user.email,
-                role: user.role,
-                nama_perusahaan: user.nama_perusahaan
-            }
-        });
+        console.log(`Login attempt: ${user.email}, Role: ${user.role}, Company: [${user.nama_perusahaan}]`);
+
+        if ((user.role === 'operator' || user.role === 'company') && user.nama_perusahaan) {
+            const Company = require('../models/companyModel');
+            const companyName = user.nama_perusahaan.trim();
+            Company.getByName(companyName, (err, company) => {
+                if (company) {
+                    req.session.companyId = company.id;
+                    console.log(`Company found: [${company.nama}], ID: ${company.id}`);
+                } else {
+                    console.log(`Company NOT found for name: [${companyName}]`);
+                }
+                sendLoginResponse(res, user);
+            });
+        } else {
+            sendLoginResponse(res, user);
+        }
+    });
+};
+
+const sendLoginResponse = (res, user) => {
+    res.json({
+        message: 'Login successful',
+        user: {
+            id: user.id,
+            nama: user.nama,
+            email: user.email,
+            role: user.role,
+            nama_perusahaan: user.nama_perusahaan
+        }
     });
 };
 
@@ -90,6 +110,13 @@ exports.getCurrentUser = (req, res) => {
     User.getUserById(req.session.userId, (err, user) => {
         if (err) return res.status(500).json({ message: 'Database error' });
         if (!user) return res.status(404).json({ message: 'User not found' });
-        res.json(user);
+        res.json({
+            ...user,
+            companyId: req.session.companyId
+        });
     });
+};
+
+exports.debugSession = (req, res) => {
+    res.json(req.session);
 };

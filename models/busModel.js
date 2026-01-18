@@ -3,7 +3,8 @@ const db = require('../config/db');
 const Bus = {
     getAll: (callback) => {
         const sql = `
-            SELECT b.*, 
+            SELECT b.id, b.nama_bus, b.company_id, b.origin_city_id, b.destination_city_id, 
+                   b.jam, b.estimasi_sampai, b.total_seats, b.harga,
                    c1.nama_kota AS asal_kota, 
                    c2.nama_kota AS tujuan_kota,
                    c.nama AS nama_perusahaan
@@ -15,23 +16,6 @@ const Bus = {
         db.query(sql, callback);
     },
 
-    getById: (id, callback) => {
-        const sql = `
-            SELECT b.*, 
-                   c1.nama_kota AS asal_kota, 
-                   c2.nama_kota AS tujuan_kota,
-                   c.nama AS nama_perusahaan
-            FROM bus b
-            LEFT JOIN companies c ON b.company_id = c.id
-            LEFT JOIN cities c1 ON b.origin_city_id = c1.id
-            LEFT JOIN cities c2 ON b.destination_city_id = c2.id
-            WHERE b.id = ?
-        `;
-        db.query(sql, [id], (err, results) => {
-            if (err) return callback(err, null);
-            return callback(null, results[0]);
-        });
-    },
 
     create: (data, callback) => {
         const sql = "INSERT INTO bus (nama_bus, company_id, origin_city_id, destination_city_id, jam, estimasi_sampai, total_seats, harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -69,7 +53,8 @@ const Bus = {
 
     getBuses: (asal, tujuan, callback) => {
         let sql = `
-            SELECT b.*, 
+            SELECT b.id, b.nama_bus, b.company_id, b.origin_city_id, b.destination_city_id, 
+                   b.jam, b.estimasi_sampai, b.total_seats, b.harga,
                    c1.nama_kota AS asal_kota, 
                    c2.nama_kota AS tujuan_kota,
                    c.nama AS nama_perusahaan

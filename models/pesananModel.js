@@ -11,13 +11,6 @@ const Pesanan = {
                    JOIN bus b ON p.bus_id=b.id`;
         db.query(query, callback);
     },
-    getById: (id, callback) => {
-        const query = "SELECT * FROM pesanan WHERE id = ?";
-        db.query(query, [id], (err, results) => {
-            if (err) return callback(err, null);
-            return callback(null, results[0]);
-        });
-    },
     updateBus: (id, busId, callback) => {
         const query = "UPDATE pesanan SET bus_id = ? WHERE id = ?";
         db.query(query, [busId, id], callback);
@@ -26,10 +19,6 @@ const Pesanan = {
         const query = "UPDATE pesanan SET kursi = ? WHERE id = ?";
         db.query(query, [seat, id], callback);
     },
-    delete: (id, callback) => {
-        const query = "DELETE FROM pesanan WHERE id = ?";
-        db.query(query, [id], callback);
-    }
 };
 
 module.exports = Pesanan;

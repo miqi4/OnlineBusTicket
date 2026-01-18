@@ -32,9 +32,20 @@ const AdminController = {
 
     // Company Management
     getAllCompanies: (req, res) => {
-        Company.getAll((err, results) => {
+        const db = require('../config/db');
+        const sql = `
+            SELECT c.*, u.email AS login_email 
+            FROM companies c 
+            LEFT JOIN users u ON TRIM(u.nama_perusahaan) = TRIM(c.nama) AND u.role IN ('operator', 'company')
+        `;
+        db.query(sql, (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
-            res.json(results);
+            // Map results to ensure email field contains the login email if available
+            const mappedResults = results.map(row => ({
+                ...row,
+                email: row.login_email || row.email
+            }));
+            res.json(mappedResults);
         });
     },
     createCompany: (req, res) => {
@@ -44,15 +55,65 @@ const AdminController = {
         });
     },
     updateCompany: (req, res) => {
-        Company.update(req.params.id, req.body, (err, result) => {
+        const { id } = req.params;
+        const { nama } = req.body;
+        const db = require('../config/db');
+
+        // Get old name first to update linked users
+        Company.getById(id, (err, oldCompany) => {
             if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: 'Company updated successfully' });
+            if (!oldCompany) return res.status(404).json({ error: 'Company not found' });
+
+            Company.update(id, req.body, (err, result) => {
+                if (err) return res.status(500).json({ error: err.message });
+
+                // Update linked users if name changed
+                if (oldCompany.nama !== nama) {
+                    db.query("UPDATE users SET nama_perusahaan = ? WHERE nama_perusahaan = ?", [nama, oldCompany.nama], (uErr) => {
+                        if (uErr) console.error('Error updating linked users:', uErr);
+                        res.json({ message: 'Company and linked users updated successfully' });
+                    });
+                } else {
+                    res.json({ message: 'Company updated successfully' });
+                }
+            });
         });
     },
     deleteCompany: (req, res) => {
         Company.delete(req.params.id, (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: 'Company deleted successfully' });
+        });
+    },
+
+    updateCompanyCredentials: async (req, res) => {
+        const { id } = req.params;
+        const { email, password } = req.body;
+        const bcrypt = require('bcrypt');
+        const User = require('../models/userModel');
+        const db = require('../config/db');
+
+        Company.getById(id, async (err, company) => {
+            if (err) return res.status(500).json({ error: err.message });
+            if (!company) return res.status(404).json({ error: 'Company not found' });
+
+            try {
+                const hashedPassword = await bcrypt.hash(password, 10);
+
+                // Update users table
+                User.updateCredentialsByCompanyName(company.nama, email, hashedPassword, (uErr) => {
+                    if (uErr) console.error('Error updating users table:', uErr);
+
+                    // Also update companies table to keep them in sync
+                    const sql = "UPDATE companies SET email = ?, password = ? WHERE id = ?";
+                    db.query(sql, [email, hashedPassword, id], (cErr) => {
+                        if (cErr) return res.status(500).json({ error: cErr.message });
+                        res.json({ message: 'Credentials updated successfully in both tables' });
+                    });
+                });
+            } catch (hashErr) {
+                res.status(500).json({ error: hashErr.message });
+            }
         });
     },
 

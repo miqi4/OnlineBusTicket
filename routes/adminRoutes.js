@@ -17,6 +17,7 @@ router.delete('/cities/:id', AdminController.deleteCity);
 router.get('/companies', AdminController.getAllCompanies);
 router.post('/companies', AdminController.createCompany);
 router.put('/companies/:id', AdminController.updateCompany);
+router.put('/companies/:id/credentials', AdminController.updateCompanyCredentials);
 router.delete('/companies/:id', AdminController.deleteCompany);
 
 // Buses (Schedules)

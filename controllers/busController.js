@@ -24,3 +24,16 @@ exports.getLocations = (req, res) => {
         res.json(locations);
     });
 };
+
+exports.getCompanies = (req, res) => {
+    const Company = require('../models/companyModel');
+    Company.getAll((err, results) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send("Database Error");
+            return;
+        }
+        const companies = results.map(row => row.nama);
+        res.json(companies);
+    });
+};

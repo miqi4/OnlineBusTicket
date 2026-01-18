@@ -20,6 +20,11 @@ const User = {
             if (err) return callback(err, null);
             return callback(null, results[0]);
         });
+    },
+
+    updateCredentialsByCompanyName: (companyName, email, password, callback) => {
+        const sql = "UPDATE users SET email = ?, password = ? WHERE TRIM(nama_perusahaan) = TRIM(?)";
+        db.query(sql, [email, password, companyName], callback);
     }
 };
 

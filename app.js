@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const busRoutes = require('./routes/bus');
 const pesananRoutes = require('./routes/pesanan');
 const adminRoutes = require('./routes/adminRoutes');
+const companyRoutes = require('./routes/companyRoutes');
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'secret_key_bustion',
@@ -26,11 +27,15 @@ app.use('/api/bus', busRoutes);
 app.use('/api/pesanan', pesananRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/company', companyRoutes);
 
 // Secure Admin Panel
 const { requireRole } = require('./middleware/auth');
 const path = require('path');
 app.use('/admin', requireRole(['admin']), express.static(path.join(__dirname, 'admin_panel')));
+
+// Secure Company Dashboard
+app.use('/company', requireRole(['operator', 'company']), express.static(path.join(__dirname, 'public/company')));
 
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");

@@ -6,13 +6,6 @@ const City = {
         db.query(sql, callback);
     },
 
-    getById: (id, callback) => {
-        const sql = "SELECT * FROM cities WHERE id = ?";
-        db.query(sql, [id], (err, results) => {
-            if (err) return callback(err, null);
-            return callback(null, results[0]);
-        });
-    },
 
     create: (data, callback) => {
         const sql = "INSERT INTO cities (nama_kota) VALUES (?)";

@@ -55,9 +55,9 @@
                         <div class="bus-content">
                             <h3 class="bus-title">${bus.nama_bus}</h3>
                             <div class="bus-route">
-                                <span>🕒 ${bus.jam} - ${bus.estimasi_sampai}</span>
+                                <span>🕒 ${bus.jam} - ${bus.estimasi_sampai || '-'}</span>
                                 <span>•</span>
-                                <span>${bus.asal} ➝ ${bus.tujuan}</span>
+                                <span>${bus.asal_kota} ➝ ${bus.tujuan_kota}</span>
                             </div>
                             <div class="bus-features">
                                 <span class="feature-tag">AC</span>
